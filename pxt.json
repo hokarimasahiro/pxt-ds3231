@@ -5,8 +5,8 @@
         "core": "*"
     },
     "files": [
-        "main.ts",
-        "README.md"
+        "README.md",
+        "ds3231.ts"
     ],
     "testFiles": [
         "test.ts"
