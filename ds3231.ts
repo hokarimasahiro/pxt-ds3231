@@ -15,7 +15,9 @@ enum clockData {
     // % block="分"
     minute = 5,
     // % block="秒"
-    second = 6
+    second = 6,
+    // % block="UNIX TIME"
+    unix = 7
 }
 
 /**
@@ -120,7 +122,16 @@ namespace ds3231 {
      */
     //% blockId="setClockData" block="set %clockData to %n"
     export function setClockData(dt: clockData,n:number): void {
-        dateTime[dt]=n;
+        if (dt != clockData.unix) dateTime[dt]=n;
+        else{
+            dateTime[clockData.year]=getYear(dt);
+            dateTime[clockData.month] = getMonth(dt);
+            dateTime[clockData.day] = getDay(dt);
+            dateTime[clockData.weekday] = getWeekday(dt);
+            dateTime[clockData.hour] = getHour(dt);
+            dateTime[clockData.minute] = getMinute(dt);
+            dateTime[clockData.second] = getSecond(dt);
+        }
     }
 
     /**
@@ -129,6 +140,140 @@ namespace ds3231 {
      */
     //% blockId="getClockData" block="%clockData"
     export function getClockData(dt: clockData): number {
-        return dateTime[dt];
+        if (dt != clockData.unix) return dateTime[dt];
+        else{
+            return convDateTime(dateTime[clockData.year],
+                                dateTime[clockData.month],
+                                dateTime[clockData.day],
+                                dateTime[clockData.hour],
+                                dateTime[clockData.minute],
+                                dateTime[clockData.second]
+                                 );
+        }
+    }
+    let wYear: number;
+    let wDays: number;
+    let leapYear: number;
+    function getHour(DateTime: number): number {
+        return Math.trunc(DateTime / 3600) % 24
+    }
+    function getMinute(DateTime: number): number {
+        return Math.trunc(DateTime / 60) % 60
+    }
+    function getSecond(DateTime: number): number {
+        return DateTime % 60
+    }
+    function getDays(DateTime: number): number {
+        return Math.trunc(DateTime / 86400)
+    }
+    function getYear(Datetime: number): number {
+        wYear = Math.trunc((getDays(Datetime) + 0.5) / 365.25)
+        return wYear + 1970
+    }
+    function getMonth(Datetime: number): number {
+        wYear = getYear(Datetime)
+        wDays = getDays(Datetime) - ((wYear - 1970) * 365 + Math.ceil((wYear - 1972) / 4))
+        if (wYear % 4 == 0) {
+            leapYear = 1
+        } else {
+            leapYear = 0
+        }
+        if (wDays > 333 + leapYear) {
+            return 12
+        } else if (wDays > 303 + leapYear) {
+            return 11
+        } else if (wDays > 272 + leapYear) {
+            return 10
+        } else if (wDays > 242 + leapYear) {
+            return 9
+        } else if (wDays > 211 + leapYear) {
+            return 8
+        } else if (wDays > 180 + leapYear) {
+            return 7
+        } else if (wDays > 150 + leapYear) {
+            return 6
+        } else if (wDays > 119 + leapYear) {
+            return 5
+        } else if (wDays > 89 + leapYear) {
+            return 4
+        } else if (wDays > 58 + leapYear) {
+            return 3
+        } else if (wDays > 30 + 0) {
+            return 2
+        } else {
+            return 1
+        }
+    }
+    function getDay(Datetime: number): number {
+        wYear = getYear(Datetime)
+        wDays = getDays(Datetime) - ((wYear - 1970) * 365 + Math.ceil((wYear - 1972) / 4))
+        if (wYear % 4 == 0) {
+            leapYear = 1
+        } else {
+            leapYear = 0
+        }
+        if (wDays > 333 + leapYear) {
+            return wDays - (333 + leapYear)
+        } else if (wDays > 303 + leapYear) {
+            return wDays - (303 + leapYear)
+        } else if (wDays > 272 + leapYear) {
+            return wDays - (272 + leapYear)
+        } else if (wDays > 242 + leapYear) {
+            return wDays - (242 + leapYear)
+        } else if (wDays > 211 + leapYear) {
+            return wDays - (211 + leapYear)
+        } else if (wDays > 180 + leapYear) {
+            return wDays - (180 + leapYear)
+        } else if (wDays > 150 + leapYear) {
+            return wDays - (150 + leapYear)
+        } else if (wDays > 119 + leapYear) {
+            return wDays - (119 + leapYear)
+        } else if (wDays > 89 + leapYear) {
+            return wDays - (89 + leapYear)
+        } else if (wDays > 58 + leapYear) {
+            return wDays - (58 + leapYear)
+        } else if (wDays > 30 + 0) {
+            return wDays - (30 + 0)
+        } else {
+            return wDays + 1
+        }
+    }
+    function getWeekday(DateTime: number): number {
+        return (getDays(DateTime) + 4) % 7
+    }
+    function convDateTime(year: number, month: number, day: number, hour: number, minute: number, second: number): number {
+        if (year < 100) wYear = (2000 + year) - 1970; else wYear = year - 1970;
+        if (year % 4 == 0) {
+            leapYear = 1
+        } else {
+            leapYear = 0
+        }
+        wDays = wYear * 365 + Math.ceil((wYear - 2) / 4)
+        if (month == 1) {
+            wDays += day - 1
+        } else if (month == 2) {
+            wDays += day + 30 + 0
+        } else if (month == 3) {
+            wDays += day + 58 + leapYear
+        } else if (month == 4) {
+            wDays += day + 89 + leapYear
+        } else if (month == 5) {
+            wDays += day + 119 + leapYear
+        } else if (month == 6) {
+            wDays += day + 150 + leapYear
+        } else if (month == 7) {
+            wDays += day + 180 + leapYear
+        } else if (month == 8) {
+            wDays += day + 211 + leapYear
+        } else if (month == 9) {
+            wDays += day + 242 + leapYear
+        } else if (month == 10) {
+            wDays += day + 272 + leapYear
+        } else if (month == 11) {
+            wDays += day + 303 + leapYear
+        } else if (month == 12) {
+            wDays += day + 333 + leapYear
+        }
+        return ((wDays * 24 + hour) * 60 + minute) * 60 + second
     }
 }
