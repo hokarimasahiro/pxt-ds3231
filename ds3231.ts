@@ -114,41 +114,37 @@ namespace ds3231 {
         dateTime[clockData.second] = HexToDec(buf[0] & 0x7f)   	// second
     }
     /**
-     * setAlarm1
+     * setAlarm
+     * @param n alarm number
      * @param h hour
      * @param m minute
      */
-    //% blockId="setAlarm1" block="set alarm1 to %h:%m"
-    export function setAlarm1(h:number,m:number):void{
-        let buf = pins.createBuffer(5);
+    //% blockId="setAlarm" block="set alarm%n to %h:%m"
+    export function setAlarm(n:number,h:number,m:number):void{
+        if(n == 1){
+            let buf = pins.createBuffer(5);
 
-        buf[0] = REG_ALARM1S;
-        buf[1] = 0;
-        buf[2] = DecToHex(m);
-        buf[3] = DecToHex(h);
-        buf[4] = 0x80;
+            buf[0] = REG_ALARM1S;
+            buf[1] = 0;
+            buf[2] = DecToHex(m);
+            buf[3] = DecToHex(h);
+            buf[4] = 0x80;
 
-        pins.i2cWriteBuffer(I2C_ADDR, buf);
+            pins.i2cWriteBuffer(I2C_ADDR, buf);
 
-        setReg(REG_CTRL,getReg(REG_CTRL) | 0x01);
-    }
-    /**
-     * setAlarm2
-     * @param h hour
-     * @param m minute
-     */
-    //% blockId="setAlarm2" block="set alarm2 to %h:%m"
-    export function setAlarm2(h: number, m: number): void {
-        let buf = pins.createBuffer(4);
+            setReg(REG_CTRL, getReg(REG_CTRL) | 0x01);
+        } else {
+            let buf = pins.createBuffer(4);
 
-        buf[0] = REG_ALARM2M;
-        buf[1] = DecToHex(m);
-        buf[2] = DecToHex(h);
-        buf[3] = 0x80;
+            buf[0] = REG_ALARM2M;
+            buf[1] = DecToHex(m);
+            buf[2] = DecToHex(h);
+            buf[3] = 0x80;
 
-        pins.i2cWriteBuffer(I2C_ADDR, buf);
+            pins.i2cWriteBuffer(I2C_ADDR, buf);
 
-        setReg(REG_CTRL, getReg(REG_CTRL) | 0x02);
+            setReg(REG_CTRL, getReg(REG_CTRL) | 0x02);
+        }
     }
     /**
      * resetAlarm
