@@ -83,8 +83,6 @@ namespace ds3231 {
     //% blockId="setClock" block="set clock"
     export function setClock(): void {
 
-        initDevice();
-    
         let buf = pins.createBuffer(8);
     
         buf[0] = REG_SECOND;
@@ -103,8 +101,6 @@ namespace ds3231 {
      */
     //% blockId="getClock" block="get clock"
     export function getClock(): void {
-
-        initDevice();
         
         pins.i2cWriteNumber(I2C_ADDR, REG_SECOND, NumberFormat.UInt8BE);
         let buf = pins.i2cReadBuffer(I2C_ADDR, 8);
