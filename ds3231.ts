@@ -85,13 +85,13 @@ namespace ds3231 {
         let buf = pins.createBuffer(8);
     
         buf[0] = REG_SECOND;
-        buf[1] = DecToHex(dateTime[6]);
-        buf[2] = DecToHex(dateTime[5]);
-        buf[3] = DecToHex(dateTime[4]);
-        buf[4] = DecToHex(dateTime[3] + 1);
-        buf[5] = DecToHex(dateTime[2]);
-        buf[6] = DecToHex(dateTime[1]);
-        buf[7] = DecToHex(dateTime[0] % 100);
+        buf[1] = DecToHex(dateTime[clockData.second]);
+        buf[2] = DecToHex(dateTime[clockData.minute]);
+        buf[3] = DecToHex(dateTime[clockData.hour]);
+        buf[4] = DecToHex(dateTime[clockData.weekday] + 1);
+        buf[5] = DecToHex(dateTime[clockData.day]);
+        buf[6] = DecToHex(dateTime[clockData.month]);
+        buf[7] = DecToHex(dateTime[clockData.year] % 100);
 
         pins.i2cWriteBuffer(I2C_ADDR, buf)
     }
@@ -106,15 +106,23 @@ namespace ds3231 {
         pins.i2cWriteNumber(I2C_ADDR, REG_SECOND, NumberFormat.UInt8BE);
         let buf = pins.i2cReadBuffer(I2C_ADDR, 8);
 
-        dateTime[0] = HexToDec(buf[6])            	// year
-        dateTime[1] = HexToDec(buf[5] & 0x1f)    	// month
-        dateTime[2] = HexToDec(buf[4] & 0x3f)       // day
-        dateTime[3] = HexToDec(buf[3] & 0x07) - 1;	// weekday
-        dateTime[4] = HexToDec(buf[2] & 0x3f)     	// hour
-        dateTime[5] = HexToDec(buf[1] & 0x7f)   	// minute
-        dateTime[6] = HexToDec(buf[0] & 0x7f)   	// second
+        dateTime[clockData.year] = HexToDec(buf[6]) + 2000      // year
+        dateTime[clockData.month] = HexToDec(buf[5] & 0x1f)    	// month
+        dateTime[clockData.day] = HexToDec(buf[4] & 0x3f)       // day
+        dateTime[clockData.weekday] = HexToDec(buf[3] & 0x07) - 1;	// weekday
+        dateTime[clockData.hour] = HexToDec(buf[2] & 0x3f)     	// hour
+        dateTime[clockData.minute] = HexToDec(buf[1] & 0x7f)   	// minute
+        dateTime[clockData.second] = HexToDec(buf[0] & 0x7f)   	// second
     }
+    /**
+     * setAlarm1
+     * @param h hour
+     * @param m minute
+     */
+    //% blockId="setAlarm1" block="set alarm1 to %h:%m"
+export function setAlarm1(h:number,m:number):void{
 
+}
     /**
      * setClockData
      * @param dt clockData
@@ -124,13 +132,13 @@ namespace ds3231 {
     export function setClockData(dt: clockData,n:number): void {
         if (dt != clockData.unix) dateTime[dt]=n;
         else{
-            dateTime[clockData.year]=getYear(dt);
-            dateTime[clockData.month] = getMonth(dt);
-            dateTime[clockData.day] = getDay(dt);
-            dateTime[clockData.weekday] = getWeekday(dt);
-            dateTime[clockData.hour] = getHour(dt);
-            dateTime[clockData.minute] = getMinute(dt);
-            dateTime[clockData.second] = getSecond(dt);
+            dateTime[clockData.year]=getYear(n);
+            dateTime[clockData.month] = getMonth(n);
+            dateTime[clockData.day] = getDay(n);
+            dateTime[clockData.weekday] = getWeekday(n);
+            dateTime[clockData.hour] = getHour(n);
+            dateTime[clockData.minute] = getMinute(n);
+            dateTime[clockData.second] = getSecond(n);
         }
     }
 
