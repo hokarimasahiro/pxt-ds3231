@@ -119,7 +119,7 @@ namespace ds3231 {
      * @param h hour
      * @param m minute
      */
-    //% blockId="setAlarm" block="set alarm%n to %h:%m"
+    //% blockId="setAlarm" block="set alarm#%n to %h:%m"
     export function setAlarm(n:number,h:number,m:number):void{
         if(n == 1){
             let buf = pins.createBuffer(5);
@@ -150,7 +150,7 @@ namespace ds3231 {
      * resetAlarm
      * @param n alarm number
      */
-    //% blockId="resetAlarm" block="reset alarm %n"
+    //% blockId="resetAlarm" block="reset alarm#%n"
     export function resetAlarm(n:number):void{
         if(n == 1){
             setReg(REG_STATUS, getReg(REG_STATUS) & 0xfe);
@@ -164,7 +164,7 @@ namespace ds3231 {
      * checkAlarm
      * @param n alarm number
      */
-    //% blockId="checkAlarm" block="check alarm %n"
+    //% blockId="checkAlarm" block="check alarm#%n"
     export function checkAlarm(n:number):boolean{
         let ct = getReg(REG_STATUS);
         if(n == 1){
