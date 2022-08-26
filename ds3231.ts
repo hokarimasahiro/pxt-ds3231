@@ -73,7 +73,7 @@ namespace ds3231 {
     export function initDevice(): void {
 
 		if (initFlag == 0){
-	        setReg(REG_CTRL, 0x1c)
+	        setReg(REG_CTRL, 0x04)
 	        initFlag=1;
 		}
     }
@@ -152,10 +152,17 @@ namespace ds3231 {
     }
     /**
      * resetAlarm
+     * @param n alarm number
      */
-    //% blockId="resetAlarm" block="reset alarm"
-    export function resetAlarm():void{
-        setReg(REG_CTRL, getReg(REG_CTRL) & 0x0c);
+    //% blockId="resetAlarm" block="reset alarm %n"
+    export function resetAlarm(n:number):void{
+        if(n == 1){
+            setReg(REG_STATUS, getReg(REG_STATUS) & 0xfe);
+            setReg(REG_CTRL, getReg(REG_CTRL) & 0xfe);
+        } else {
+            setReg(REG_STATUS, getReg(REG_STATUS) & 0xfd);
+            setReg(REG_CTRL, getReg(REG_CTRL) & 0xfd);
+        }
     }
     /**
      * checkAlarm
