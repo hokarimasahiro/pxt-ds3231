@@ -26,9 +26,12 @@ enum clockData {
 //% weight=10 color=#800080 icon="\uf017" block="DS3231"
 namespace ds3231 {
 
-    let I2C_ADDR = 0x68
-    let REG_CTRL = 0x0e
-    let REG_SECOND = 0x00
+    let I2C_ADDR = 0x68;
+    let REG_CTRL = 0x0e;
+    let REG_SECOND = 0x00;
+    let REG_ALARM1S = 0x07;
+    let REG_ALARM2M = 0x0b;
+    let REG_STATUS = 0x0f;
     let dateTime=[0,0,0,0,0,0,0];     // year,month,day,weekday,hour,minute,second
     let initFlag=0;
     /**
@@ -120,9 +123,59 @@ namespace ds3231 {
      * @param m minute
      */
     //% blockId="setAlarm1" block="set alarm1 to %h:%m"
-export function setAlarm1(h:number,m:number):void{
+    export function setAlarm1(h:number,m:number):void{
+        let buf = pins.createBuffer(5);
 
-}
+        buf[0] = REG_ALARM1S;
+        buf[1] = 0;
+        buf[2] = DecToHex(m);
+        buf[3] = DecToHex(h);
+        buf[4] = 0x80;
+
+        pins.i2cWriteBuffer(I2C_ADDR, buf);
+
+        setReg(REG_CTRL,getReg(REG_CTRL) | 0x01);
+    }
+    /**
+     * setAlarm2
+     * @param h hour
+     * @param m minute
+     */
+    //% blockId="setAlarm2" block="set alarm2 to %h:%m"
+    export function setAlarm2(h: number, m: number): void {
+        let buf = pins.createBuffer(4);
+
+        buf[0] = REG_ALARM2M;
+        buf[1] = DecToHex(m);
+        buf[2] = DecToHex(h);
+        buf[3] = 0x80;
+
+        pins.i2cWriteBuffer(I2C_ADDR, buf);
+
+        setReg(REG_CTRL, getReg(REG_CTRL) | 0x02);
+    }
+    /**
+     * resetAlarm
+     */
+    //% blockId="resetAlarm" block="reset alarm"
+    export function resetAlarm():void{
+        setReg(REG_CTRL, getReg(REG_CTRL) & 0x0c);
+    }
+    /**
+     * checkAlarm
+     * @param n alarm number
+     */
+    //% blockId="checkAlarm" block="check alarm %n"
+    export function checkAlarm(n:number):boolean{
+        let ct = getReg(REG_STATUS);
+        if(n == 1){
+            if((ct & 0x01) == 0x01) return true;
+            else return false;
+        } else {
+            if ((ct & 0x02) == 0x02) return true;
+            else return false;
+        }
+    }
     /**
      * setClockData
      * @param dt clockData
