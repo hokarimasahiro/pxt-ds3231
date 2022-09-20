@@ -89,7 +89,14 @@ namespace ds3231 {
         buf[1] = DecToHex(dateTime[clockData.second]);
         buf[2] = DecToHex(dateTime[clockData.minute]);
         buf[3] = DecToHex(dateTime[clockData.hour]);
-        buf[4] = DecToHex(dateTime[clockData.weekday] + 1);
+        buf[4] = DecToHex(getWeekday(convDateTime(
+            dateTime[clockData.year],
+            dateTime[clockData.month],
+            dateTime[clockData.day],
+            dateTime[clockData.hour],
+            dateTime[clockData.minute],
+            dateTime[clockData.second]
+            )) + 1);
         buf[5] = DecToHex(dateTime[clockData.day]);
         buf[6] = DecToHex(dateTime[clockData.month]);
         buf[7] = DecToHex(dateTime[clockData.year] % 100);
