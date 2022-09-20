@@ -3,13 +3,13 @@
  */
 enum clockData {
     // % block="年"
-    year = 0,
+    year = 0,    // 1970～2069
     // % block="月"
     month = 1,
     // % block="日"
     day = 2,
     // % block="曜日"
-    weekday = 3,
+    weekday = 3,  // 0:日曜日～6:土曜日
     // % block="時"
     hour = 4,
     // % block="分"
@@ -112,7 +112,11 @@ namespace ds3231 {
         pins.i2cWriteNumber(I2C_ADDR, REG_SECOND, NumberFormat.UInt8BE);
         let buf = pins.i2cReadBuffer(I2C_ADDR, 8);
 
-        dateTime[clockData.year] = HexToDec(buf[6]) + 2000      // year
+        if (HexToDec(buf[6]) < 70){
+            dateTime[clockData.year] = HexToDec(buf[6]) + 2000;
+        } else{
+            dateTime[clockData.year] = HexToDec(buf[6]) + 1900;
+        }      // year
         dateTime[clockData.month] = HexToDec(buf[5] & 0x1f)    	// month
         dateTime[clockData.day] = HexToDec(buf[4] & 0x3f)       // day
         dateTime[clockData.weekday] = HexToDec(buf[3] & 0x07) - 1;	// weekday
