@@ -24,7 +24,7 @@ enum clockData {
  * RTC block
  */
 //% weight=10 color=#800080 icon="\uf017" block="DS3231"
-namespace ds3231 {
+namespace rtc {
 
     let I2C_ADDR = 0x68;
     let REG_CTRL = 0x0e;
